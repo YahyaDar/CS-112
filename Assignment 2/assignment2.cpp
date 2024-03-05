@@ -31,7 +31,7 @@ public:
 
     void displayBoard() {
         system("clear");
-        system("cls");
+        // system("cls");
         for (int i = 0; i < boardSize; ++i) {
             for (int j = 0; j < boardSize; ++j) {
                 cout << gameBoard[i][j] << " ";
@@ -42,7 +42,7 @@ public:
 
     void showWinScreen() {
         system("clear");
-        system("cls");
+        // system("cls");
         cout << "Congratulations! Game over!" << endl;
     }
 
@@ -51,11 +51,13 @@ public:
             displayBoard();
             if (isBotMode) {
                 humanMove('O');
-                botMove();
+                if (!checkGameEnd()) // Check if the game has ended after human move
+                    botMove();
             } else {
                 cout << "O's move: ";
                 humanMove('O');
-                cout << "X's move: ";
+                if (!checkGameEnd()) // Check if the game has ended after O's move
+                    cout << "X's move: ";
                 humanMove('X');
             }
         }
@@ -65,14 +67,42 @@ public:
     }
 
     bool checkGameEnd() {
-        // Game over conditions
-        // (Implementation of game end conditions goes here)
+        // Check rows and columns for a win
+        for (int i = 0; i < boardSize; ++i) {
+            for (int j = 0; j < boardSize - 4; ++j) {
+                // Check rows
+                if (gameBoard[i][j] != '.' && gameBoard[i][j] == gameBoard[i][j+1] && gameBoard[i][j] == gameBoard[i][j+2] && gameBoard[i][j] == gameBoard[i][j+3] && gameBoard[i][j] == gameBoard[i][j+4]) {
+                    return true;
+                }
+                // Check columns
+                if (gameBoard[j][i] != '.' && gameBoard[j][i] == gameBoard[j+1][i] && gameBoard[j][i] == gameBoard[j+2][i] && gameBoard[j][i] == gameBoard[j+3][i] && gameBoard[j][i] == gameBoard[j+4][i]) {
+                    return true;
+                }
+            }
+        }
+        // Check diagonals for a win
+        for (int i = 0; i < boardSize - 4; ++i) {
+            for (int j = 0; j < boardSize - 4; ++j) {
+                // Check diagonals (top-left to bottom-right)
+                if (gameBoard[i][j] != '.' && gameBoard[i][j] == gameBoard[i+1][j+1] && gameBoard[i][j] == gameBoard[i+2][j+2] && gameBoard[i][j] == gameBoard[i+3][j+3] && gameBoard[i][j] == gameBoard[i+4][j+4]) {
+                    return true;
+                }
+                // Check diagonals (bottom-left to top-right)
+                if (gameBoard[i+4][j] != '.' && gameBoard[i+4][j] == gameBoard[i+3][j+1] && gameBoard[i+4][j] == gameBoard[i+2][j+2] && gameBoard[i+4][j] == gameBoard[i+1][j+3] && gameBoard[i+4][j] == gameBoard[i][j+4]) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
     void botMove() {
-        // Bot's move logic
-        // (Implementation of bot's move goes here)
+        int row, col;
+        do {
+            row = rand() % boardSize;
+            col = rand() % boardSize;
+        } while (gameBoard[row][col] != '.'); // Keep generating random moves until an empty spot is found
+        gameBoard[row][col] = 'X';
     }
 
     void humanMove(char symbol) {
@@ -91,7 +121,7 @@ public:
 
 int main() {
     system("clear"); // clear console for Unix systems
-    system("cls"); // clear console for Windows systems
+    // system("cls"); // clear console for Windows systems
     int boardSize;
     cout << "Choose board size (9 or 15): ";
     cin >> boardSize;
